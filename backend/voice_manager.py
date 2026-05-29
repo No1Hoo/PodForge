@@ -20,6 +20,8 @@ PRESET_VOICES: dict[str, str] = {
     "young_woman": "A young woman in her 20s, gentle and sweet voice, slightly higher pitch",
     "mature_woman": "A mature woman in her 30s, confident and elegant voice, warm and soothing",
     "girl": "A teenage girl, cheerful and lively voice, bright and energetic",
+    "sweet_girl": "A sweet young girl with a cute bubbly voice, innocent and adorable",
+    "cold_beauty": "A cold and elegant woman with a crisp clear voice, composed and slightly aloof",
     "温柔女声": "一位年轻女性，声音温柔甜美，略带磁性",
     "知性女声": "一位成熟女性，声音知性优雅，温暖而有感染力",
     # Male archetypes
@@ -32,8 +34,60 @@ PRESET_VOICES: dict[str, str] = {
     # Specialty
     "robot": "A robotic voice with slight metallic resonance, measured and precise",
     "whisper": "A soft whispering voice, intimate and gentle, very quiet and close",
+    "villain": "A menacing deep voice with slow deliberate delivery, intimidating and dark",
+    "fairy": "A light ethereal female voice with a magical sparkle, soft and enchanting",
+    "cartoon": "A high-pitched cartoonish voice with exaggerated expression and rapid delivery",
+    "ai_assistant": "A calm and neutral AI assistant voice, clear and professional with a friendly undertone",
+    "老人": "一位老年人，声音沧桑沙哑，语速缓慢，充满人生阅历",
     "机器人": "机器人声音，带有轻微金属质感，语速均匀",
+    "反派": "一个低沉阴险的声音，语速缓慢，充满威胁感",
+    "精灵": "一个空灵的女声，带有魔法般的轻盈感，温柔而迷人",
 }
+
+# Category mapping for each preset (used by frontend)
+PRESET_CATEGORIES: dict[str, str] = {
+    "narrator": "male",
+    "host": "male",
+    "旁白": "male",
+    "主持人": "male",
+    "young_woman": "female",
+    "mature_woman": "female",
+    "girl": "female",
+    "sweet_girl": "female",
+    "cold_beauty": "female",
+    "温柔女声": "female",
+    "知性女声": "female",
+    "young_man": "male",
+    "mature_man": "male",
+    "uncle": "male",
+    "boy": "male",
+    "阳光男声": "male",
+    "大叔": "male",
+    "robot": "special",
+    "whisper": "special",
+    "villain": "special",
+    "fairy": "special",
+    "cartoon": "special",
+    "ai_assistant": "special",
+    "老人": "male",
+    "机器人": "special",
+    "反派": "special",
+    "精灵": "special",
+}
+
+# Supported emotion tags (bilingual)
+EMOTION_TAGS: list[dict[str, str]] = [
+    {"en": "happy", "zh": "开心", "emoji": "😊"},
+    {"en": "sad", "zh": "悲伤", "emoji": "😢"},
+    {"en": "angry", "zh": "愤怒", "emoji": "😠"},
+    {"en": "surprised", "zh": "惊讶", "emoji": "😲"},
+    {"en": "whisper", "zh": "悄悄话", "emoji": "🤫"},
+    {"en": "thinking", "zh": "思考", "emoji": "🤔"},
+    {"en": "excited", "zh": "兴奋", "emoji": "🤩"},
+    {"en": "gentle", "zh": "温柔", "emoji": "🥰"},
+    {"en": "serious", "zh": "严肃", "emoji": "😐"},
+    {"en": "humorous", "zh": "幽默", "emoji": "😄"},
+]
 
 # Auto-assignment pool: when a character name doesn't match any preset,
 # cycle through these generic voices.
