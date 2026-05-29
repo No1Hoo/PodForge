@@ -1,0 +1,23 @@
+# PodForge — Sample Script Format
+
+# Lines starting with # are comments and will be ignored.
+# Format: CharacterName: Dialogue text
+# Use (emotion) tags for emotional control: (happy), (sad), (angry), (whisper)
+
+Narrator: 欢迎来到今天的播客节目。今天我们请到了两位嘉宾。
+
+小明: 大家好！我是小明，今天很高兴来到这里。
+
+小红: (开心) 大家好呀！我是小红，期待今天的讨论。
+
+Narrator: 那我们直接开始吧。小明，你最近在忙什么？
+
+小明: (思考) 最近在研究AI语音合成，真的太有意思了。
+
+小红: (惊讶) 真的吗？那你给我们讲讲呗！
+
+小明: 好的。现在的AI已经可以做到非常自然的语音合成了，甚至可以克隆任何人的声音。
+
+小红: (感叹) 这也太厉害了吧！
+
+Narrator: 感谢两位的分享。今天的节目就到这里，我们下期再见！
