@@ -98,6 +98,18 @@ async def main():
 asyncio.run(main())
 ```
 
+**Web UI:**
+
+```bash
+# Start backend (port 8080)
+cd backend && python -m uvicorn backend.main:app --port 8080
+
+# Start frontend (port 3000)
+cd frontend && npm install && npm run dev
+```
+
+Open `http://localhost:3000` → load a demo script → pick voices → click **生成播客**.
+
 ## Script Format
 
 ```text
@@ -122,14 +134,14 @@ CharacterName: (emotion) Dialogue text with emotion control
 ```
 ┌─────────────────────────┐
 │   Next.js Frontend      │
-│   Script Editor + UI    │
+│   Script Editor + UI    │◄── Emotion picker, voice panel
 └───────────┬─────────────┘
-            │ REST API
+            │ REST + WebSocket
 ┌───────────▼─────────────┐
 │   FastAPI Backend       │
-│   Parse → Voice → TTS   │
+│   Parse → Voice → TTS   │◄── 27 presets, 10 emotions
 └───────────┬─────────────┘
-            │
+            │ HTTP
 ┌───────────▼─────────────┐
 │   VoxCPM2 Server        │
 │   (Colab / Local GPU)   │
@@ -151,21 +163,28 @@ PodForge/
 ├── colab/
 │   ├── voxcpm_server.ipynb # Colab notebook (GPU server)
 │   └── voxcpm_server.py    # Standalone server script
-├── frontend/               # Next.js web UI (coming soon)
+├── frontend/               # Next.js web UI
+│   ├── app/page.tsx         # Main page
+│   ├── components/          # 6 React components
+│   └── lib/                 # API client + WebSocket
 ├── examples/
-│   └── demo_drama.txt      # Sample script
+│   ├── demo_drama.txt       # Podcast demo
+│   ├── news_broadcast.txt   # News broadcast
+│   ├── fairy_tale.txt       # Fairy tale story
+│   ├── customer_service.txt # Customer service
+│   └── podcast_3hosts.txt   # 3-host tech podcast
 └── README.md
 ```
 
 ## Roadmap
 
 - [x] Script parser with emotion support
-- [x] Voice Design auto-assignment
+- [x] Voice Design auto-assignment (27 presets)
 - [x] CLI tool
 - [x] Google Colab server
-- [ ] Web UI (Next.js)
-- [ ] Real-time progress (WebSocket)
-- [ ] Preset voice library
+- [x] Web UI (Next.js + TypeScript + Tailwind)
+- [x] Real-time progress (WebSocket streaming)
+- [x] Preset voice library (27 voices, 10 emotions)
 - [ ] BGM mixing
 - [ ] RSS podcast feed export
 - [ ] Multi-language script support
