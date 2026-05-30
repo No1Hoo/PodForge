@@ -12,6 +12,16 @@ Turn any script into a fully voiced podcast or audio drama — with unique chara
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![VoxCPM2](https://img.shields.io/badge/Powered_by-VoxCPM2-orange.svg)](https://github.com/OpenBMB/VoxCPM)
 
+---
+
+## ⚡ Try It Now — No Install Needed
+
+**Use PodForge instantly on HuggingFace Spaces:**
+
+[![Open in Spaces](https://huggingface.co/datasets/gradio-app/repo-files/main/params-badge.svg)](https://huggingface.co/spaces)
+
+> ⚠️ First "Generate" click triggers VoxCPM2 model loading (~30-60 seconds). Subsequent requests are instant.
+
 </div>
 
 ---
@@ -39,6 +49,20 @@ Input:                          Output:
 - **Cloud GPU Ready** — Runs on Google Colab (free T4) or any CUDA server
 
 ## Quick Start
+
+### Deploy Your Own Space
+
+1. Go to [huggingface.co/new-space](https://huggingface.co/new-space)
+2. Select **Gradio** SDK, **T4 GPU** hardware
+3. Connect your GitHub repo: `No1Hoo/PodForge`
+4. HF builds automatically → your Space is live at `https://username-podforge.hf.space`
+
+### Local Development
+
+```bash
+pip install -r requirements_hf.txt
+python app.py   # starts Gradio on http://localhost:7860
+```
 
 ### 1. Start the TTS Server
 
@@ -118,6 +142,8 @@ CharacterName: Dialogue text
 CharacterName: (emotion) Dialogue text with emotion control
 ```
 
+> **Tip:** Spaces users can click the example script buttons to load a demo instantly.
+
 ### Supported Emotions
 
 | Tag | Effect |
@@ -173,6 +199,8 @@ PodForge/
 │   ├── fairy_tale.txt       # Fairy tale story
 │   ├── customer_service.txt # Customer service
 │   └── podcast_3hosts.txt   # 3-host tech podcast
+├── app.py                   # Gradio UI for HuggingFace Space
+├── requirements_hf.txt      # HuggingFace Space dependencies
 └── README.md
 ```
 
