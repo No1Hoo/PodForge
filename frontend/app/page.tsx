@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   checkHealth,
   getPresets,
@@ -50,12 +50,18 @@ export default function Home() {
     getEmotions().then(setEmotions).catch(console.error);
   }, []);
 
-  // Parse script (debounced)
+  // Derived state from script (handles empty case)
+  const { lines, chars } = useMemo(() => {
+    if (!script.trim()) return { lines: [], chars: [] };
+    // This is a synchronous derivation, parseScript result is used reactively
+    // When script is empty, lines and chars are empty
+    return { lines: parsedLines, chars: characters };
+  }, [script, parsedLines, characters]);
+
+  // Parse script (debounced) - only runs parse when script is non-empty
   useEffect(() => {
-    if (!script.trim()) {
-      // Reset derived state synchronously is OK for cleanup
-      return;
-    }
+    if (!script.trim()) return;  // Empty script means empty derived state via useMemo
+
     const timer = setTimeout(() => {
       parseScript(script, voiceOverrides)
         .then((res) => {
@@ -152,8 +158,8 @@ export default function Home() {
             <ScriptEditor
               value={script}
               onChange={setScript}
-              characterCount={characters.length}
-              lineCount={parsedLines.length}
+              characterCount={chars.length}
+              lineCount={lines.length}
             />
           </div>
           <div className="flex items-center gap-3 mt-3">
@@ -165,9 +171,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => {
-                setScript("");
-                setParsedLines([]);
-                setCharacters([]);
+                setScript("");  // useMemo will derive empty lines/chars
                 setVoiceOverrides({});
                 setAudio(null);
                 setError(null);
