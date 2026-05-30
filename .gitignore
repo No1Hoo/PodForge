@@ -20,3 +20,7 @@ out/
 .mypy_cache/
 .ruff_cache/
 test_raw.json
+.venv/
+.venv2/
+__pycache__/
+*.pyc

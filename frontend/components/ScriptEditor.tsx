@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef } from "react";
 
 interface Props {
   value: string;
@@ -16,23 +16,6 @@ export default function ScriptEditor({
   lineCount,
 }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const insertAtCursor = useCallback(
-    (text: string) => {
-      const el = textareaRef.current;
-      if (!el) return;
-      const start = el.selectionStart;
-      const end = el.selectionEnd;
-      const newValue = value.slice(0, start) + text + value.slice(end);
-      onChange(newValue);
-      // Restore cursor position after the inserted text
-      requestAnimationFrame(() => {
-        el.selectionStart = el.selectionEnd = start + text.length;
-        el.focus();
-      });
-    },
-    [value, onChange]
-  );
 
   return (
     <div className="flex flex-col h-full">

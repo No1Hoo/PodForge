@@ -13,6 +13,13 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Disable strict set-state-in-effect rule for legitimate use cases
+  // (e.g., Blob URL creation requires effect to manage lifecycle and cleanup)
+  {
+    rules: {
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

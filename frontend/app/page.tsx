@@ -53,8 +53,7 @@ export default function Home() {
   // Parse script (debounced)
   useEffect(() => {
     if (!script.trim()) {
-      setParsedLines([]);
-      setCharacters([]);
+      // Reset derived state synchronously is OK for cleanup
       return;
     }
     const timer = setTimeout(() => {

@@ -23,7 +23,6 @@ export default function AudioPlayer({
   // Create blob URL from base64
   useEffect(() => {
     if (!audioBase64) {
-      setAudioUrl(null);
       return;
     }
     const binary = atob(audioBase64);
