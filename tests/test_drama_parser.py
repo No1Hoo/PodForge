@@ -1,6 +1,5 @@
 """Tests for the drama script parser."""
 
-import pytest
 
 from backend.drama_parser import DialogueLine, parse_line, parse_script
 

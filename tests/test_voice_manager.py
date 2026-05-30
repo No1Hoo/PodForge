@@ -1,8 +1,7 @@
 """Tests for the voice manager."""
 
-import pytest
 
-from backend.voice_manager import VoiceManager, PRESET_VOICES
+from backend.voice_manager import VoiceManager
 
 
 class TestVoiceManager:

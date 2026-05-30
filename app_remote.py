@@ -5,7 +5,6 @@ Gradio UI 连接 Kaggle 远程 TTS 服务器。
 
 from __future__ import annotations
 
-import asyncio
 import base64
 import io
 import os
@@ -72,8 +71,7 @@ def generate_podcast(script_text: str) -> tuple[str, str]:
             
             # Call sync version via httpx
             import httpx
-            import json
-            
+
             payload = {
                 "text": tagged,
                 "cfg_value": 2.0,

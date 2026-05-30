@@ -1,0 +1,2 @@
+# Exclude notebooks from linting (they have cell-level issues)
+exclude = ["*.ipynb"]
