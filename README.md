@@ -64,6 +64,25 @@ pip install -r requirements_hf.txt
 python app.py   # starts Gradio on http://localhost:7860
 ```
 
+### Using Remote TTS Server (Recommended)
+
+If you don't have a local GPU, use Kaggle's free T4 GPU as the TTS server:
+
+**1. Start Kaggle TTS Server**
+- Open [`colab/voxcpm_server_kaggle.ipynb`](colab/voxcpm_server_kaggle.ipynb) in Kaggle
+- Enable T4 GPU in Settings
+- Run all cells
+- Copy the ngrok public URL (e.g., `https://xxxx.ngrok-free.dev`)
+
+**2. Run PodForge**
+
+```bash
+pip install -r requirements_hf.txt
+TTS_BASE_URL=https://your-ngrok-url.ngrok-free.dev python3 app_remote.py
+```
+
+Open `http://localhost:7860` → load a demo → click **生成播客**
+
 ### 1. Start the TTS Server
 
 **Option A: Google Colab (free GPU)**
