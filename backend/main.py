@@ -39,9 +39,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Config ──────────────────────────────────────────────────────────────────
+# -- Config ------------------------------------------------------------------
 
-TTS_BASE_URL = os.environ.get("PODFORGE_TTS_URL", "http://localhost:8809")
+DEFAULT_TTS_BASE_URL = os.environ.get("PODFORGE_TTS_URL", "http://localhost:8809").rstrip("/")
+DEFAULT_TTS_TIMEOUT = float(os.environ.get("PODFORGE_TTS_TIMEOUT", "300"))
+_tts_base_url = DEFAULT_TTS_BASE_URL
+_tts_timeout = DEFAULT_TTS_TIMEOUT
 SAMPLE_RATE = 48000
 
 
@@ -73,6 +76,7 @@ class GenerateResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     tts_server: bool
+    tts_base_url: str
 
 
 class PresetInfo(BaseModel):
@@ -88,17 +92,59 @@ class EmotionInfo(BaseModel):
     emoji: str
 
 
+class TTSConfig(BaseModel):
+    base_url: str
+    timeout_seconds: float = DEFAULT_TTS_TIMEOUT
+
+
+# -- Runtime config helpers ---------------------------------------------------
+
+
+def get_tts_config() -> TTSConfig:
+    return TTSConfig(base_url=_tts_base_url, timeout_seconds=_tts_timeout)
+
+
+def set_tts_config(config: TTSConfig) -> TTSConfig:
+    global _tts_base_url, _tts_timeout
+    base_url = config.base_url.strip().rstrip("/")
+    if not base_url:
+        raise HTTPException(400, "TTS base URL cannot be empty.")
+    if config.timeout_seconds <= 0:
+        raise HTTPException(400, "TTS timeout must be greater than 0.")
+
+    _tts_base_url = base_url
+    _tts_timeout = config.timeout_seconds
+    return get_tts_config()
+
+
+def create_tts_client() -> VoxCPMClient:
+    config = get_tts_config()
+    return VoxCPMClient(config.base_url, timeout=config.timeout_seconds)
+
+
 # ── Routes ──────────────────────────────────────────────────────────────────
 
 
 @app.get("/health", response_model=HealthResponse)
 async def health():
-    async with VoxCPMClient(TTS_BASE_URL) as tts:
+    config = get_tts_config()
+    async with create_tts_client() as tts:
         tts_ok = await tts.health()
     return HealthResponse(
         status="ok" if tts_ok else "degraded",
         tts_server=tts_ok,
+        tts_base_url=config.base_url,
     )
+
+
+@app.get("/tts-config", response_model=TTSConfig)
+async def read_tts_config():
+    return get_tts_config()
+
+
+@app.post("/tts-config", response_model=TTSConfig)
+async def update_tts_config(config: TTSConfig):
+    return set_tts_config(config)
 
 
 @app.get("/presets", response_model=list[PresetInfo])
@@ -152,7 +198,7 @@ async def generate(req: GenerateRequest):
     vm = VoiceManager(overrides=req.voice_overrides or {})
     vm.assign_all(script.characters)
 
-    async with VoxCPMClient(TTS_BASE_URL) as tts:
+    async with create_tts_client() as tts:
         all_audio: list[np.ndarray] = []
         silence = np.zeros(int(SAMPLE_RATE * 0.3))
 
@@ -223,7 +269,7 @@ async def generate_stream(ws: WebSocket):
     silence = np.zeros(int(SAMPLE_RATE * 0.3))
     t0 = time.monotonic()
 
-    async with VoxCPMClient(TTS_BASE_URL) as tts:
+    async with create_tts_client() as tts:
         for i, line in enumerate(script.lines):
             desc = vm.get_description(line.character)
             text = line.text

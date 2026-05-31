@@ -123,11 +123,20 @@ npm run dev -- --hostname 127.0.0.1 --port 3000
 
 Open `http://127.0.0.1:3000`. The header should show `TTS: 已连接`.
 
+To switch between Kaggle and Colab without restarting the backend:
+
+1. Click **算力** in the web UI header.
+2. Paste your Kaggle and Colab ngrok URLs into their fields.
+3. Click **用 Kaggle** or **用 Colab**.
+4. Click **检查** if you want to re-run the TTS health check.
+
+The backend updates its active TTS URL in memory. If you restart the backend, use the **算力** panel again or start it with `PODFORGE_TTS_URL=...`.
+
 **Remote TTS lifecycle**
 
 - You do not need to keep Kaggle or Colab running when you are not generating audio.
 - If you stop the notebook, the ngrok URL becomes invalid.
-- Next time you run the notebook, copy the new ngrok URL and restart the local PodForge backend with the new `PODFORGE_TTS_URL`.
+- Next time you run the notebook, copy the new ngrok URL and apply it from the **算力** panel or restart the local PodForge backend with the new `PODFORGE_TTS_URL`.
 - Keep the final notebook cell running while generating audio.
 - Long scripts may take several minutes; avoid refreshing the browser while generation is in progress.
 - `PODFORGE_TTS_TIMEOUT=600` is recommended for remote GPU notebooks because some lines can take longer than the default HTTP timeout.
