@@ -196,7 +196,7 @@ export default function Home() {
           <div className="flex-1 min-h-0 overflow-auto mb-4">
             <VoicePanel
               presets={presets}
-              lines={parsedLines}
+              lines={lines}
               voiceOverrides={voiceOverrides}
               onOverride={(char, desc) =>
                 setVoiceOverrides((prev) => ({ ...prev, [char]: desc }))
@@ -209,7 +209,7 @@ export default function Home() {
                 {error}
               </div>
             )}
-            {generating ? (
+            {generating || (error && progress.current > 0) ? (
               <ProgressTracker
                 current={progress.current}
                 total={progress.total}

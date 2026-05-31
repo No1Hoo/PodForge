@@ -22,14 +22,14 @@ class VoxCPMClient:
     def __init__(
         self,
         base_url: str | None = None,
-        timeout: float = 120.0,
+        timeout: float | None = None,
     ):
         self.base_url = (
             base_url
             or os.environ.get("PODFORGE_TTS_URL")
             or "http://localhost:8809"
         ).rstrip("/")
-        self.timeout = timeout
+        self.timeout = timeout if timeout is not None else float(os.environ.get("PODFORGE_TTS_TIMEOUT", "300"))
         self._client: httpx.AsyncClient | None = None
 
     @property

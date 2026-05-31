@@ -48,6 +48,16 @@ Input:                          Output:
 - **CLI + Web UI** — Use from terminal or browser
 - **Cloud GPU Ready** — Runs on Google Colab (free T4) or any CUDA server
 
+## Choose Your Run Mode
+
+| Mode | Best For | Command |
+| --- | --- | --- |
+| Gradio local | Quick single-process demo | `python app.py` |
+| Gradio remote TTS | Using Kaggle/Colab GPU TTS | `TTS_BASE_URL=https://your-ngrok-url.ngrok-free.dev python app_remote.py` |
+| FastAPI backend | API server for the Next.js frontend | `python -m backend.main` |
+| Next.js frontend | Full web UI | `cd frontend && npm run dev` |
+| CLI | Script-to-WAV generation | `podforge --script examples/demo_drama.txt --output output.wav --tts-url http://localhost:8809` |
+
 ## Quick Start
 
 ### Deploy Your Own Space
@@ -152,6 +162,39 @@ cd frontend && npm install && npm run dev
 ```
 
 Open `http://localhost:3000` → load a demo script → pick voices → click **生成播客**.
+
+## Verification
+
+Run the Python checks from the repository root:
+
+```bash
+pip install -e '.[dev]'
+pytest -q
+ruff check .
+```
+
+Run the frontend checks from `frontend/`:
+
+```bash
+npm ci
+npm run lint
+npm run build
+```
+
+### Dependency Audit Note
+
+`npm audit` may report a moderate `postcss` advisory through Next.js. Do not run `npm audit fix --force` unless Next.js provides a safe non-breaking upgrade path; the current forced fix proposes a destructive downgrade to `next@9.3.3`. Treat this as a monitored dependency risk, not an immediate force-fix task.
+
+### Manual UI Regression Check
+
+This check does not require a live TTS server:
+
+1. Start the frontend with `cd frontend && npm run dev`.
+2. Open `http://localhost:3000`.
+3. Click **加载示例**.
+4. Confirm the editor footer and voice panel show parsed script content.
+5. Select all script text and delete it.
+6. Confirm the editor footer shows `0` roles and `0` lines, and the voice panel returns to its empty state.
 
 ## Script Format
 
