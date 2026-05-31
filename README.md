@@ -76,15 +76,24 @@ python app.py   # starts Gradio on http://localhost:7860
 
 ### Using Remote TTS Server (Recommended)
 
-If you don't have a local GPU, use Kaggle's free T4 GPU as the TTS server:
+If you don't have a local GPU, use Kaggle or Google Colab as the VoxCPM2 TTS server. PodForge runs locally; the notebook only hosts `/health` and `/generate` over an ngrok URL.
 
-**1. Start Kaggle TTS Server**
+**1. Start the remote TTS notebook**
 - Open [`colab/voxcpm_server_kaggle.ipynb`](colab/voxcpm_server_kaggle.ipynb) in Kaggle
-- Enable T4 GPU in Settings
-- Run all cells
+- Or open [`colab/voxcpm_server.ipynb`](colab/voxcpm_server.ipynb) in Google Colab
+- Enable a T4 GPU in notebook settings
+- Run all cells and keep the final server cell running
 - Copy the ngrok public URL (e.g., `https://xxxx.ngrok-free.dev`)
 
-**2. Run PodForge**
+The final cell should print something like:
+
+```text
+PUBLIC URL: NgrokTunnel: "https://xxxx.ngrok-free.dev" -> "http://localhost:8809"
+```
+
+Use only the HTTPS URL, for example `https://xxxx.ngrok-free.dev`.
+
+**2. Run PodForge with Gradio**
 
 ```bash
 pip install -r requirements_hf.txt
@@ -92,6 +101,36 @@ TTS_BASE_URL=https://your-ngrok-url.ngrok-free.dev python3 app_remote.py
 ```
 
 Open `http://localhost:7860` → load a demo → click **生成播客**
+
+**3. Or run PodForge with FastAPI + Next.js**
+
+```bash
+pip install -e '.[dev]'
+PODFORGE_TTS_URL=https://your-ngrok-url.ngrok-free.dev \
+PODFORGE_TTS_TIMEOUT=600 \
+python -m backend.main
+```
+
+In another terminal:
+
+```bash
+cd frontend
+npm ci
+BACKEND_URL=http://127.0.0.1:8080 \
+NEXT_PUBLIC_WS_URL=ws://127.0.0.1:8080 \
+npm run dev -- --hostname 127.0.0.1 --port 3000
+```
+
+Open `http://127.0.0.1:3000`. The header should show `TTS: 已连接`.
+
+**Remote TTS lifecycle**
+
+- You do not need to keep Kaggle or Colab running when you are not generating audio.
+- If you stop the notebook, the ngrok URL becomes invalid.
+- Next time you run the notebook, copy the new ngrok URL and restart the local PodForge backend with the new `PODFORGE_TTS_URL`.
+- Keep the final notebook cell running while generating audio.
+- Long scripts may take several minutes; avoid refreshing the browser while generation is in progress.
+- `PODFORGE_TTS_TIMEOUT=600` is recommended for remote GPU notebooks because some lines can take longer than the default HTTP timeout.
 
 ### 1. Start the TTS Server
 
