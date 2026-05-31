@@ -38,6 +38,12 @@ export interface EmotionInfo {
 export interface HealthResponse {
   status: string;
   tts_server: boolean;
+  tts_base_url: string;
+}
+
+export interface TTSConfig {
+  base_url: string;
+  timeout_seconds: number;
 }
 
 export async function checkHealth(): Promise<HealthResponse> {
@@ -52,6 +58,22 @@ export async function getPresets(): Promise<PresetInfo[]> {
 
 export async function getEmotions(): Promise<EmotionInfo[]> {
   const res = await fetch(`${API_BASE}/emotions`);
+  return res.json();
+}
+
+export async function getTTSConfig(): Promise<TTSConfig> {
+  const res = await fetch(`${API_BASE}/tts-config`);
+  if (!res.ok) throw new Error(`TTS config fetch failed: ${res.statusText}`);
+  return res.json();
+}
+
+export async function updateTTSConfig(config: TTSConfig): Promise<TTSConfig> {
+  const res = await fetch(`${API_BASE}/tts-config`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(config),
+  });
+  if (!res.ok) throw new Error(`TTS config update failed: ${res.statusText}`);
   return res.json();
 }
 

@@ -5,10 +5,13 @@ import {
   checkHealth,
   getPresets,
   getEmotions,
+  getTTSConfig,
   parseScript,
+  updateTTSConfig,
   PresetInfo,
   EmotionInfo,
   LineResult,
+  TTSConfig,
 } from "@/lib/api";
 import { generateStream, CompleteMessage } from "@/lib/ws";
 import ScriptEditor from "@/components/ScriptEditor";
@@ -16,6 +19,7 @@ import EmotionPicker from "@/components/EmotionPicker";
 import VoicePanel from "@/components/VoicePanel";
 import AudioPlayer from "@/components/AudioPlayer";
 import ProgressTracker from "@/components/ProgressTracker";
+import CloudTTSPanel from "@/components/CloudTTSPanel";
 
 const DEMO_SCRIPT = `# PodForge 示例剧本 — 播客对话
 旁白: 欢迎来到今天的播客节目。今天我们请到了两位嘉宾。
@@ -31,6 +35,9 @@ const DEMO_SCRIPT = `# PodForge 示例剧本 — 播客对话
 export default function Home() {
   const [script, setScript] = useState("");
   const [ttsStatus, setTtsStatus] = useState<"connected" | "disconnected" | "checking">("checking");
+  const [ttsConfig, setTtsConfig] = useState<TTSConfig | null>(null);
+  const [ttsApplying, setTtsApplying] = useState(false);
+  const [showTtsPanel, setShowTtsPanel] = useState(false);
   const [presets, setPresets] = useState<PresetInfo[]>([]);
   const [emotions, setEmotions] = useState<EmotionInfo[]>([]);
   const [parsedLines, setParsedLines] = useState<LineResult[]>([]);
@@ -41,14 +48,39 @@ export default function Home() {
   const [audio, setAudio] = useState<CompleteMessage | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Init
+  const refreshTtsStatus = useCallback(async () => {
+    setTtsStatus("checking");
+    const [config, health] = await Promise.all([
+      getTTSConfig(),
+      checkHealth(),
+    ]);
+    setTtsConfig(config);
+    setTtsStatus(health.tts_server ? "connected" : "disconnected");
+  }, []);
+
+  const applyTtsConfig = useCallback(
+    async (baseUrl: string, timeoutSeconds: number) => {
+      setTtsApplying(true);
+      try {
+        const config = await updateTTSConfig({
+          base_url: baseUrl,
+          timeout_seconds: timeoutSeconds,
+        });
+        setTtsConfig(config);
+        await refreshTtsStatus();
+      } finally {
+        setTtsApplying(false);
+      }
+    },
+    [refreshTtsStatus]
+  );
+
   useEffect(() => {
-    checkHealth()
-      .then((h) => setTtsStatus(h.tts_server ? "connected" : "disconnected"))
+    refreshTtsStatus()
       .catch(() => setTtsStatus("disconnected"));
     getPresets().then(setPresets).catch(console.error);
     getEmotions().then(setEmotions).catch(console.error);
-  }, []);
+  }, [refreshTtsStatus]);
 
   // Derived state from script (handles empty case)
   const { lines, chars } = useMemo(() => {
@@ -144,8 +176,23 @@ export default function Home() {
           <span className="text-zinc-400">
             TTS: {ttsStatus === "connected" ? "已连接" : ttsStatus === "checking" ? "检查中..." : "未连接"}
           </span>
+          <button
+            onClick={() => setShowTtsPanel((value) => !value)}
+            className="ml-2 rounded border border-zinc-700 px-2 py-1 text-zinc-300 hover:bg-zinc-800"
+          >
+            算力
+          </button>
         </div>
       </header>
+
+      {showTtsPanel && (
+        <CloudTTSPanel
+          config={ttsConfig}
+          applying={ttsApplying}
+          onApply={applyTtsConfig}
+          onRefresh={refreshTtsStatus}
+        />
+      )}
 
       {/* Main */}
       <main className="flex flex-col lg:flex-row gap-4 p-4 h-[calc(100vh-57px)]">
